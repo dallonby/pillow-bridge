@@ -1,31 +1,38 @@
 # Pillow Bridge
 
-A solution for forwarding pillow serial communications between two Pod devices over the network. This enables using pillows physically connected to one Pod with another Pod's hub.
+A solution for forwarding pillow serial communications between two Pod devices over the network.
 
 ## Background
 
-Pod devices communicate with their pillows via USB serial connections. Each pillow connects to a specific USB port on the hub and provides:
+Pillows have two connections to the Pod:
+1. **Water/thermal connection** - provides heating/cooling to the pillow
+2. **USB serial connection** - provides sensor data, button input, and vibration control
+
+The USB connection provides:
 - Temperature sensing (ambient temp, humidity)
 - Presence detection via piezoelectric sensors
 - Button/gesture input (double-tap, triple-tap)
 - Vibration motor for alarms
 
-This project enables scenarios where:
-- Pillows are physically connected to one Pod but need to be controlled by another
-- You want to use pillow features from a Pod that doesn't have physical pillow connections
+**The problem:** Older Pods do not present a usable USB interface for the pillows. This project solves that by allowing the pillow's water connection to go to Pod A (older Pod, for heating/cooling) while the USB data connection goes to Pod B (newer Pod with working USB interface), with data forwarded over the network back to Pod A.
+
+This enables scenarios where:
+- Pillows have their water connection to one Pod but USB connection to another
+- You want to use pillow features from a Pod that doesn't have working USB pillow ports
 - Testing/development with pillows on a different device
 
 ## Architecture
 
 ```
-Pod A (Controller)                   Network                Pod B (Pillow Host)
+Pod A (Controller)                   Network                Pod B (USB Host)
+Water connection to pillows                                 USB connection to pillows
 ┌─────────────────┐                                        ┌─────────────────┐
 │  frankenfirmware│                                        │                 │
 │       │         │                                        │  pillow_bridge  │
 │       ▼         │                                        │       │         │
 │  pillow_hook.so │◄────────── TCP:5580 ──────────────────►│       ▼         │
-│  (LD_PRELOAD)   │                                        │  /dev/ttyUSB0   │──► Left Pillow
-│       │         │                                        │  /dev/ttyUSB1   │──► Right Pillow
+│  (LD_PRELOAD)   │                                        │  /dev/ttyUSB0   │──► Left Pillow (USB)
+│       │         │                                        │  /dev/ttyUSB1   │──► Right Pillow (USB)
 │       ▼         │                                        │                 │
 │  Fake PTYs      │                                        └─────────────────┘
 │  /dev/pts/X     │
@@ -34,19 +41,19 @@ Pod A (Controller)                   Network                Pod B (Pillow Host)
 
 ### Components
 
-1. **pillow_bridge** (runs on Pod B - where pillows are physically connected)
+1. **pillow_bridge** (runs on Pod B - where pillows are USB-connected)
    - TCP server listening on port 5580
-   - Opens physical serial devices (/dev/ttyUSB0, /dev/ttyUSB1)
+   - Opens physical USB serial devices (/dev/ttyUSB0, /dev/ttyUSB1)
    - Forwards serial data bidirectionally over the network
    - Handles baud rate changes
    - Auto-reconnects if devices are unplugged/replugged
 
-2. **pillow_hook.so** (runs on Pod A - the controlling hub)
+2. **pillow_hook.so** (runs on Pod A - the controlling hub with water connection)
    - LD_PRELOAD library that intercepts frank's serial device access
    - Creates fake PTY pairs for each pillow
    - Connects to pillow_bridge over the network
    - Forwards data between frank and the remote pillows
-   - Handles all the udev/sysfs spoofing so frank thinks pillows are local
+   - Handles all the udev/sysfs spoofing so frank thinks pillows are locally USB-connected
 
 ## Protocol
 

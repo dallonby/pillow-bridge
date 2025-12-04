@@ -1,0 +1,21 @@
+[Unit]
+Description=Pillow Serial Bridge
+Documentation=https://github.com/throwaway96/free-sleep
+After=network.target dev-ttyUSB0.device
+Wants=dev-ttyUSB0.device
+
+[Service]
+Type=simple
+ExecStart=/opt/pillow_bridge
+Restart=always
+RestartSec=2
+# Give time for USB devices to enumerate on boot
+ExecStartPre=/bin/sleep 5
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=pillow_bridge
+
+[Install]
+WantedBy=multi-user.target

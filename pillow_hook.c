@@ -12,7 +12,7 @@
  * Usage:
  *   export PILLOW_HOOK_CONFIG="left:1:1.3.4,right:1:1.3.1"
  *   export PILLOW_HOOK_LOG="/tmp/pillow_hook.log"
- *   LD_PRELOAD=/path/to/pillow_hook.so /path/to/frankenfirmware
+ *   LD_PRELOAD=/path/to/pillow_hook.so /opt/eight/bin/frankenfirmware
  *
  * Config format: side:busnum:devpath,side:busnum:devpath
  *   side = "left" or "right"

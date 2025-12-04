@@ -128,7 +128,7 @@ ssh -p 8822 root@<POD_A_IP> 'systemctl daemon-reload && systemctl restart frank'
 
 ### Pillow USB Port Mapping
 
-The USB port assignments are configured in the device's machine.json config file:
+The USB port assignments are configured in `/opt/eight/config/machine.json`:
 
 ```json
 {
@@ -185,7 +185,7 @@ ssh -p 8822 root@<POD_A_IP> 'journalctl -u frank | grep "\[tmp\]" | tail -10'
    - Check `journalctl -u pillow_bridge` for device discovery messages
 
 3. **Left/Right pillows swapped**
-   - Edit machine.json on Pod A
+   - Edit `/opt/eight/config/machine.json` on Pod A
    - Swap the `leftPillowPort` and `rightPillowPort` values
    - Restart frank: `systemctl restart frank`
 

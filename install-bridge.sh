@@ -1,5 +1,7 @@
 #!/bin/bash
-# Install pillow_bridge on the Pod with physical pillow connections
+# Install pillow_bridge on the Pod with pillow USB connections
+# This Pod has the pillows' USB serial cables connected to it.
+# (The pillows' water/thermal connections may go to a different Pod)
 # Usage: ./install-bridge.sh <pod_ip>
 
 set -e

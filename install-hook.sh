@@ -1,6 +1,8 @@
 #!/bin/bash
-# Install pillow_hook on the controller Pod
-# Uses the existing frank.service with a systemd override
+# Install pillow_hook on the controller Pod (with pillow water/thermal connections)
+# This Pod has the pillows' water connections but lacks working USB ports for pillows.
+# The hook intercepts USB device access and forwards to a remote Pod via network.
+# Uses the existing frank.service with a systemd override.
 # Usage: ./install-hook.sh <pod_ip>
 
 set -e

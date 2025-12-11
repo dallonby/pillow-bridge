@@ -212,4 +212,4 @@ MIT License - See LICENSE file for details.
 
 ## Acknowledgments
 
-This project is part of the [free-sleep](https://github.com/throwaway96/free-sleep) ecosystem.
+This project is part of the [free-sleep](https://github.com/throwaway31265/free-sleep) ecosystem.
